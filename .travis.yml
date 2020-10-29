@@ -1,0 +1,20 @@
+sudo: required
+services:
+  - docker
+
+before_install:
+  - docker build -t multiform/react-test -f ./client/Dockerfile.dev ./client
+
+script:
+  - docker run -e CI=true multiform/react-test npm test
+
+after_success:
+  - docker build -t multiform/multi-client ./client
+  - docker build -t multiform/multi-nginx ./nginx
+  - docker build -t multiform/multi-server ./server
+  - docker build -t multiform/multi-worker ./worker
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  - docker push multiform/multi-client
+  - docker push multiform/multi-server
+  - docker push multiform/multi-nginx
+  - docker push multiform/multi-worker

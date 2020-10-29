@@ -30,3 +30,6 @@
     try_files $uri $uri/ /index.html;
   }
 }
+
+script:
+  - docker run -e CI=true USERNAME/react-test npm test
